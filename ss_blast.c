@@ -142,10 +142,13 @@ int main(int argc, char* argv[])
 	fseek(bit, 0, SEEK_END);
 	unsigned int bsize = ftell(bit);
 	fseek(bit, 0, SEEK_SET);
+	// openxc7 and vivado bitstream have different header offset<
+	// making the 000000bb11220044 sync sequence off the 32-bit word
+	int skip = bsize % 2; 
 	unsigned int *buf = (unsigned int *) malloc(bsize * 4);
-	unsigned int rsize = fread(buf, 1, bsize, bit);
+	unsigned int rsize = fread((void*)buf + skip, 1, bsize - skip, bit);
 	fclose(bit);
-	if (bsize != rsize) {
+	if (bsize - skip != rsize) {
 		printf("Reading entire bitstream encountered error!\n");
 		free(buf);
 		return -5;
