@@ -144,7 +144,7 @@ int main(int argc, char* argv[])
 	fseek(bit, 0, SEEK_SET);
 	// openxc7 and vivado bitstream have different header offset<
 	// making the 000000bb11220044 sync sequence off the 32-bit word
-	int skip = bsize % 2; 
+	int skip = (4 - bsize % 4) % 4;
 	unsigned int *buf = (unsigned int *) malloc(bsize * 4);
 	unsigned int rsize = fread((void*)buf + skip, 1, bsize - skip, bit);
 	fclose(bit);
